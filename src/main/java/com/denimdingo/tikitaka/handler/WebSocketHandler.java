@@ -29,6 +29,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
             catch (Exception e) {
                 // TODO: throw
+                // commit test
             }
         });
     }
