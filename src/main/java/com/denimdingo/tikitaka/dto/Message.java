@@ -1,11 +1,9 @@
 package com.denimdingo.tikitaka.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
+@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,4 +24,5 @@ public class Message {
     public void closeConnect() {
         this.type = "close";
     }
+
 }
