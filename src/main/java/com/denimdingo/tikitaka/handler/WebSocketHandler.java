@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebSocketHandler extends TextWebSocketHandler {
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
-
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         var sessionId = session.getId();
@@ -30,7 +29,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         sessions.values().forEach(s -> { // 2) 모든 세션에 알림
             try {
                 if(!s.getId().equals(sessionId)) {
-                    s.sendMessage(new TextMessage((CharSequence) message));
+                    s.sendMessage(new TextMessage(message.toString()));
                 }
             }
             catch (Exception e) {
