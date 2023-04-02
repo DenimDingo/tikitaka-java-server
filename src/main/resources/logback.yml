@@ -1,0 +1,10 @@
+---
+#appenders:
+#  console:
+#    name: STDOUT
+#    encoder:
+#      pattern: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+#root:
+#  level: INFO
+#  appender-ref:
+#    - ref: STDOUT
