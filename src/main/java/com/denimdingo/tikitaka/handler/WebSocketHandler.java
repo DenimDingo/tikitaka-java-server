@@ -1,6 +1,7 @@
 package com.denimdingo.tikitaka.handler;
 
 import com.denimdingo.tikitaka.dto.Message;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.web.socket.CloseStatus;
@@ -14,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class WebSocketHandler extends TextWebSocketHandler {
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -24,12 +26,17 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 .sender(sessionId)
                 .receiver("all")
                 .build();
+
         message.newConnect();
 
         sessions.values().forEach(s -> { // 2) 모든 세션에 알림
             try {
                 if(!s.getId().equals(sessionId)) {
-                    s.sendMessage(new TextMessage(message.toString()));
+                    TextMessage tm = new TextMessage(message.toString());
+                    s.sendMessage(tm);
+                    log.info("payload : {}", tm.getPayload());
+                    log.debug("send message!");
+                    log.info("(info) send message!");
                 }
             }
             catch (Exception e) {
@@ -40,8 +47,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
-    protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) throws Exception {
-        super.handleTextMessage(session, message);
+    protected void handleTextMessage(WebSocketSession session, TextMessage textMessage) throws Exception {
+        Message message = objectMapper.readValue(textMessage.getPayload(), Message.class);
+        message.setSender(session.getId());
+        WebSocketSession receiver = sessions.get(message.getReceiver());
+
+        if (receiver != null && receiver.isOpen()) {
+            receiver.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
+        }
     }
 
     @Override
