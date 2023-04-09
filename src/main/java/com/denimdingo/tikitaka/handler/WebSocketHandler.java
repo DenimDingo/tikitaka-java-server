@@ -36,11 +36,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         sessions.values().forEach(s -> { // 2) 모든 세션에 알림
             try {
                 if(!s.getId().equals(sessionId)) {
-                    TextMessage tm = new TextMessage(message.toString());
-                    s.sendMessage(tm);
-                    log.info("payload : {}", tm.getPayload());
-                    log.debug("send message!");
-                    log.info("(info) send message!");
+                    s.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
                 }
             }
             catch (Exception e) {
@@ -66,8 +62,23 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
-    public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) throws Exception {
-        super.afterConnectionClosed(session, status);
+    public void afterConnectionClosed(WebSocketSession session, @NonNull CloseStatus status) {
+        var sessionId = session.getId();
+
+        sessions.remove(sessionId);
+
+        final Message message = new Message();
+        message.closeConnect();
+        message.setSender(sessionId);
+
+        sessions.values().forEach(s-> {
+            try {
+                s.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
+                logger.info("(info) status {}", status);
+            } catch (Exception e) {
+                logger.info("(info) Error Occurred {}", e.toString());
+            }
+        });
     }
 
 }
