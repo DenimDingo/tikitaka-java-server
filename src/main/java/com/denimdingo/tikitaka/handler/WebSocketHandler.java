@@ -3,6 +3,8 @@ package com.denimdingo.tikitaka.handler;
 import com.denimdingo.tikitaka.dto.Message;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -14,8 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class WebSocketHandler extends TextWebSocketHandler {
-    private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketHandler.class);
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
@@ -28,6 +31,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 .build();
 
         message.newConnect();
+        logger.info("(info) payload : {}", message);
 
         sessions.values().forEach(s -> { // 2) 모든 세션에 알림
             try {
@@ -40,8 +44,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 }
             }
             catch (Exception e) {
-                // TODO: throw
-                log.error("An Exception Occurred", e);
+                logger.info("(info) Error Occurred ", e);
             }
         });
     }

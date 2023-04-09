@@ -9,9 +9,11 @@ import lombok.*;
 @NoArgsConstructor
 public class Message {
     private String type;
+    private String name;
+    private String msg;
+    private String date;
     private String sender;
     private String receiver;
-    private String data;
 
     public void setSender(String sender) {
         this.sender = sender;
