@@ -49,11 +49,17 @@ public class WebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage textMessage) throws Exception {
         Message message = objectMapper.readValue(textMessage.getPayload(), Message.class);
         message.setSender(session.getId());
-        WebSocketSession receiver = sessions.get(message.getReceiver());
-
-        if (receiver != null && receiver.isOpen()) {
-            receiver.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
-        }
+        logger.info("(info) check get Message {}", message);
+        sessions.values().forEach(s -> { // 2) 모든 세션에 알림
+            try {
+                if(s != null && s.isOpen()) {
+                    s.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
+                }
+            }
+            catch (Exception e) {
+                logger.info("(info) Error Occurred ", e);
+            }
+        });
     }
 
     @Override
