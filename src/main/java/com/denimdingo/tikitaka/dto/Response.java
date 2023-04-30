@@ -9,6 +9,4 @@ public class Response {
     private final String from;
     private final String text;
     private final String time;
-
-
 }
