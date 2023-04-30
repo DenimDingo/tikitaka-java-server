@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class RedisSampleService {
+public class RedisService {
 
     private final StringRedisTemplate stringRedisTemplate;
-    private static final Logger redisLogger = LoggerFactory.getLogger(RedisSampleService.class);
+    private static final Logger redisLogger = LoggerFactory.getLogger(RedisService.class);
 
     /**
      * Get data value in Redis database
